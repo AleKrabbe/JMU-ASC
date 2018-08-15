@@ -1,0 +1,10 @@
+{
+    "require": {
+        "paragonie/halite": "^4",
+        "ext-json": "*"
+    },
+    "name": "",
+    "description": ""
+}
+
+
