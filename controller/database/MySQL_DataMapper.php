@@ -22,6 +22,7 @@ namespace asc {
         private $estados;
         private $cidades;
         private $militares;
+        private $conselhoNomes;
 
         public function __construct()
         {
@@ -70,6 +71,21 @@ namespace asc {
                 $estado = new Estado($row['id'], $row['nome'], $row['uf']);
                 array_push($this->estados, $estado);
             }
+        }
+
+        public function fetchNomesConselho($tipo)
+        {
+            // tipo = 3 -> Conselho Permanente
+            // tipo = 4 -> Conselho Especial
+            $this->conselhoNomes = array();
+            $query = "SELECT * FROM stm_asc.NOME_SIGLA WHERE tipo = :tipo;";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->bindValue(":tipo", $tipo);
+            $stmt->execute();
+            while ($row = $stmt->fetch()) {
+                array_push($this->conselhoNomes, [safeEncrypt($row['id_nome_sigla'], $_SESSION['key']) , $row['nome'], $row['sigla']]);
+            }
+            return $this->conselhoNomes;
         }
 
         public function fetchAllMilitares()

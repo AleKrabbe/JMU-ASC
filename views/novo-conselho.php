@@ -2,6 +2,23 @@
 session_start();
 include("../controller/loginFuncs.php");
 \asc\checkLogin();
+
+require_once '../controller/database/MySQL_DataMapper.php';
+
+try {
+    $mapper = \asc\MySQL_DataMapper::getInstance();
+} catch (\Exception $e) {
+    echo $e->getMessage(), "\n";
+}
+
+if (isset($_GET['type'])) {
+    if ($_GET['type'] == 'permanente') {
+        $result = $mapper->fetchNomesConselho(3);
+    } elseif ($_GET['type'] == 'especial') {
+        $result = $mapper->fetchNomesConselho(4);
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,11 +51,78 @@ include("../controller/loginFuncs.php");
 <div id="wrapper">
     <div id="page-wrapper" class="gray-bg">
         <?php include "menu.php";?>
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-10">
+                <h2>Cadastro Militar</h2>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="../index.php">Principal</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a>Novo</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <strong>Conselho
+                            <?php
+                            if (isset($_GET['type'])) {
+                                if ($_GET['type'] == 'permanente') {
+                                    echo 'Permanente';
+                                } elseif ($_GET['type'] == 'especial') {
+                                    echo 'Especial';
+                                } else {
+                                    echo '';
+                                }
+                            }
+                            ?>
+                        </strong>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-lg-2">
 
-        <div class="wrapper wrapper-content animated fadeInRight">
-
+            </div>
         </div>
-
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Entre com as informações do conselho</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form id="cadastro-conselho-form" method="post">
+                                <div class="form-group row"><label class="col-sm-2 col-form-label">Tipo&nbsp;<span style="color: red">*</span></label>
+                                    <div class="col-sm-10">
+                                        <select id="nome-conselho-dropdown" class="shouldValidate form-control m-b" name="nome" required>
+                                            <option value="null"></option>
+                                            <?php
+                                            foreach ($result as $nome){
+                                                echo '<option'.' value="'.$nome[0].'"'.'>'.$nome[1].' ('.$nome[2].')'.'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group row"><label class="col-sm-2 col-form-label">Posto&nbsp;<span style="color: red">*</span></label>
+                                    <div class="col-sm-10">
+                                        <select id="ajaxop" class="shouldValidate form-control m-b" name="posto" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <p>Os campos marcados com &nbsp;<span style="color: red">*</span>&nbsp; são obrigatórios.</p>
+                                <div class="form-group row">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <button id="submit-btn" class="btn btn-primary btn-lg" type="submit" name="submit">Cadastrar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <?php include "footer.php";?>
     </div>
 </div>
