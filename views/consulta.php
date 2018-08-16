@@ -90,10 +90,6 @@ include("../controller/loginFuncs.php");
 <script src="../js/plugins/dataTables/datatables.min.js"></script>
 <script src="../js/plugins/dataTables/dataTables.bootstrap4.min.js"></script>
 
-<!-- Custom and plugin javascript -->
-<!--<script src="../js/inspinia.js"></script>-->
-<!--<script src="../js/plugins/pace/pace.min.js"></script>-->
-
 <!-- Page-Level Scripts -->
 <script>
     $(document).ready(function(){
