@@ -22,8 +22,8 @@
                 <li class="dropdown">
                     <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Novo Conselho</a>
                     <ul role="menu" class="dropdown-menu">
-                        <li><a href="">Conselho Permanente</a></li>
-                        <li><a href="">Conselho Especial</a></li>
+                        <li><a href="novo-conselho.php?type=permanente">Conselho Permanente</a></li>
+                        <li><a href="novo-conselho.php?type=especial">Conselho Especial</a></li>
                     </ul>
                 </li>
                 <li>
