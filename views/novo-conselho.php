@@ -189,6 +189,7 @@ if (isset($_GET['type'])) {
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="hr-line-dashed" style="background-color: #7d7d7d;margin-bottom: 30px"></div>
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="form-group">
@@ -320,7 +321,9 @@ if ($_GET['type'] == 'especial') {
             removeSelectedLabel: "Remover os selecionados",
             removeAllLabel: "Remover todos",
             filterPlaceHolder: "Buscar",
-            filterTextClear: "Mostrar tudo"
+            filterTextClear: "Mostrar tudo",
+            nonSelectedListLabel: 'Militares disponíveis',
+            selectedListLabel: 'Militares selecionados'
         }).on('change', function(){
             var size = $(this).find(":selected").length;
             if(size > 3){
@@ -332,6 +335,9 @@ if ($_GET['type'] == 'especial') {
             }
         });
 
+        var presidentes;
+        var suplentes;
+        var juizes;
         // Carrega os militares baseado no conselho escolhido.
         $('#nome-conselho-dropdown').change(function () {
             var id = $(this).val();
@@ -339,14 +345,13 @@ if ($_GET['type'] == 'especial') {
                 $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
                 $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
                     var militares = JSON.parse(data);
-                    console.log(militares);
-                    var presidetnes = militares['presidentes'];
-                    var suplentes = militares['suplentes'];
-                    var juizes = militares['juizes'];
+                    presidentes = militares['presidentes'];
+                    suplentes = militares['suplentes'];
+                    juizes = militares['juizes'];
 
                     var option = '<option></option>';
-                    for (var i = 0; i < presidetnes.length; i++) {
-                        option += '<option value="'+ presidetnes[i][0] + '">' + presidetnes[i][1] + ' (' + presidetnes[i][2] + ')</option>';
+                    for (var i = 0; i < presidentes.length; i++) {
+                        option += '<option value="'+ presidentes[i][0] + '">' + presidentes[i][1] + ' (' + presidentes[i][2] + ')</option>';
                     }
                     $("#presidente-conselho-dropdown").html(option);
 
@@ -356,7 +361,7 @@ if ($_GET['type'] == 'especial') {
                     }
                     $("#suplente-conselho-dropdown").html(option);
 
-                    option = '<option></option>';
+                    option = '';
                     for (var i = 0; i < juizes.length; i++) {
                         option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
                     }
@@ -366,6 +371,17 @@ if ($_GET['type'] == 'especial') {
                     $(".dual_select").bootstrapDualListbox('refresh', true);
                 });
             }
+        });
+
+        $("#presidente-conselho-dropdown").change(function () {
+            var id = $(this).val();
+            option = '<option></option>';
+            for (var i = 0; i < suplentes.length; i++) {
+                if (suplentes[i][0] != id) {
+                    option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
+                }
+            }
+            $('#suplente-conselho-dropdown').empty().html(option).trigger("chosen:updated");
         });
     });
 </script>
