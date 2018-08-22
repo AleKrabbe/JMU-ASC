@@ -9574,6 +9574,10 @@ li {
   border: 1px solid #ed5565;
 }
 
+.data-sucesso {
+    border: 1px solid #1ab394;
+}
+
 label[for=bootstrap-duallistbox-nonselected-list_juizes], label[for=bootstrap-duallistbox-selected-list_juizes]{
     display: block !important;
     font-weight: bold;

@@ -261,6 +261,7 @@ if ($_GET['type'] == 'especial') {
                     return false;
                 } else if ($('#nome-conselho-dropdown').val() !== 'null') {
                     $('#nome-conselho-dropdown').parent().removeClass('has-error');
+                    $('#nome-conselho-dropdown').parent().addClass('has-sucesso');
                 }
 
                 if(currentIndex === 1 && $("#data_sorteio input").val() === ''){
@@ -269,13 +270,39 @@ if ($_GET['type'] == 'especial') {
                     return false;
                 } else if ($("#data_sorteio input").val() !== '') {
                     $('#data_sorteio').children('div').removeClass('data-erro');
+                    $('#data_sorteio').children('div').addClass('data-sucesso');
                 }
 
                 if(currentIndex === 1 && $("#data_compromisso input").val() === ''){
+                    toastr.error('Selecione uma data de compromisso.', 'Erro!');
                     $('#data_compromisso').children('div').addClass('data-erro');
                     return false;
                 } else if ($("#data_compromisso input").val() !== '') {
                     $('#data_compromisso').children('div').removeClass('data-erro');
+                    $('#data_compromisso').children('div').addClass('data-sucesso');
+                }
+
+                if(currentIndex === 2 && $("#presidente-conselho-dropdown").val() === 'null') {
+                    toastr.error('Selecione o presidente do conselho.', 'Erro!');
+                    $("#presidente-conselho-dropdown").next().addClass('data-erro');
+                    return false;
+                } else if (currentIndex === 2) {
+                    $("#presidente-conselho-dropdown").next().removeClass('data-erro');
+                    $("#presidente-conselho-dropdown").next().addClass('data-sucesso');
+                }
+
+                if(currentIndex === 2 && $("#suplente-conselho-dropdown").val() === 'null') {
+                    toastr.error('Selecione o suplente do presidente.', 'Erro!');
+                    $("#suplente-conselho-dropdown").next().addClass('data-erro');
+                    return false;
+                } else if (currentIndex === 2) {
+                    $("#suplente-conselho-dropdown").next().removeClass('data-erro');
+                    $("#suplente-conselho-dropdown").next().addClass('data-sucesso');
+                }
+
+                if (currentIndex === 2 && $("#juizes-conselho-dropdown :selected").length < 4) {
+                    toastr.error('Selecione 4 juizes militares.', 'Erro!');
+                    return false;
                 }
 
                 return form.valid();
@@ -326,9 +353,9 @@ if ($_GET['type'] == 'especial') {
             selectedListLabel: 'Militares selecionados'
         }).on('change', function(){
             var size = $(this).find(":selected").length;
-            if(size > 3){
+            if(size > 4){
                 $(this).find(":selected").each(function(ind, sel){
-                    if(ind > 2)
+                    if(ind > 3)
                         $(this).prop("selected", false)
                 });
                 $(this).bootstrapDualListbox('refresh', true);
@@ -349,13 +376,13 @@ if ($_GET['type'] == 'especial') {
                     suplentes = militares['suplentes'];
                     juizes = militares['juizes'];
 
-                    var option = '<option></option>';
+                    var option = '<option value=\"null\"></option>';
                     for (var i = 0; i < presidentes.length; i++) {
                         option += '<option value="'+ presidentes[i][0] + '">' + presidentes[i][1] + ' (' + presidentes[i][2] + ')</option>';
                     }
                     $("#presidente-conselho-dropdown").html(option);
 
-                    option = '<option></option>';
+                    option = '<option value=\"null\"></option>';
                     for (var i = 0; i < suplentes.length; i++) {
                         option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
                     }
@@ -375,7 +402,7 @@ if ($_GET['type'] == 'especial') {
 
         $("#presidente-conselho-dropdown").change(function () {
             var id = $(this).val();
-            option = '<option></option>';
+            option = '<option value=\"null\"></option>';
             for (var i = 0; i < suplentes.length; i++) {
                 if (suplentes[i][0] != id) {
                     option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
