@@ -15,6 +15,8 @@ class Militar
     private $email;
     private $OM;
     private $posto;
+    private $key;
+    private $cipherCPF;
 
     public function __construct($cpf, $fname, $lname, $OM, $posto)
     {
@@ -25,6 +27,8 @@ class Militar
         $this->posto = $posto;
         $this->email = null;
         $this->telefone = null;
+        $this->key = $_SESSION['key'];
+        $this->cipherCPF = safeEncrypt($this->cpf, $this->key);
     }
 
     public function setEmail($email): void
@@ -40,6 +44,11 @@ class Militar
     public function getCpf()
     {
         return $this->cpf;
+    }
+
+    public function getCpfEncrypted()
+    {
+        return $this->cipherCPF;
     }
 
     public function getFname()

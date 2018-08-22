@@ -33,8 +33,10 @@ if (isset($_GET['type'])) {
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="../css/plugins/steps/jquery.steps.css" rel="stylesheet">
+    <link href="../css/plugins/chosen/bootstrap-chosen.css" rel="stylesheet">
     <link href="../css/plugins/datapicker/datepicker3.css" rel="stylesheet">
     <link href="../css/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+    <link href="../css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
     <link href="../css/animate.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
 
@@ -154,10 +156,10 @@ if (isset($_GET['type'])) {
                                                 if ($_GET['type'] == 'permanente') {
                                                     echo "<label>Trimestre&nbsp;<span style=\"color: red\">*</span></label>".
                                                         "<select id=\"trimestre-conselho-dropdown\" class=\"form-control m-b\" name=\"trimestre\">".
-                                                        "<option value=\"1\">1&nbsp;</option>".
-                                                        "<option value=\"2\">2&nbsp;</option>".
-                                                        "<option value=\"3\">3&nbsp;</option>".
-                                                        "<option value=\"4\">4&nbsp;</option>".
+                                                        "<option value=\"1\">1&ordm</option>".
+                                                        "<option value=\"2\">2&ordm</option>".
+                                                        "<option value=\"3\">3&ordm</option>".
+                                                        "<option value=\"4\">4&ordm</option>".
                                                         "</select>";
                                                 } elseif ($_GET['type'] == 'especial') {
                                                     echo "<label>N&ordm; do processo&nbsp;<span style=\"color: red\">*</span></label>".
@@ -171,8 +173,55 @@ if (isset($_GET['type'])) {
 
                                 <h1>Membros</h1>
                                 <fieldset>
-                                    <div class="text-center" style="margin-top: 120px">
-                                        <h2>You did it Man :-)</h2>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Selecione o presidente do conselho&nbsp;<span style="color: red">*</span></label>
+                                                <select id="presidente-conselho-dropdown" data-placeholder="Escolha um presidente..." class="form-control m-b chosen-select" name="presidente">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Selecione o suplente do presidente&nbsp;<span style="color: red">*</span></label>
+                                                <select id="suplente-conselho-dropdown" data-placeholder="Escolha um suplente..." class="form-control m-b chosen-select" name="suplente">
+                                                    <option></option>
+                                                    <option value="United States">United States</option>
+                                                    <option value="United Kingdom">United Kingdom</option>
+                                                    <option value="Australia">Australia</option>
+                                                    <option value="Austria">Austria</option>
+                                                    <option value="Bahamas">Bahamas</option>
+                                                    <option value="Barbados">Barbados</option>
+                                                    <option value="Belgium">Belgium</option>
+                                                    <option value="Bermuda">Bermuda</option>
+                                                    <option value="Brazil">Brazil</option>
+                                                    <option value="Bulgaria">Bulgaria</option>
+                                                    <option value="Cameroon">Cameroon</option>
+                                                    <option value="Canada">Canada</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label>Selecione os juizes militares&nbsp;<span style="color: red">*</span></label>
+                                                <select id="juizes-conselho-dropdown" class="form-control m-b dual_select" name="juizes" multiple>
+                                                    <option value="United States">United States</option>
+                                                    <option value="United Kingdom">United Kingdom</option>
+                                                    <option value="Australia">Australia</option>
+                                                    <option selected value="Austria">Austria</option>
+                                                    <option selected value="Bahamas">Bahamas</option>
+                                                    <option value="Barbados">Barbados</option>
+                                                    <option value="Belgium">Belgium</option>
+                                                    <option value="Bermuda">Bermuda</option>
+                                                    <option value="Brazil">Brazil</option>
+                                                    <option value="Bulgaria">Bulgaria</option>
+                                                    <option value="Cameroon">Cameroon</option>
+                                                    <option value="Canada">Canada</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </fieldset>
 
@@ -207,6 +256,12 @@ if (isset($_GET['type'])) {
 <!-- Date picker -->
 <script src="../js/plugins/datapicker/bootstrap-datepicker.js"></script>
 <script src="../js/locales/datepicker-pt-BR.js" charset="UTF-8"></script>
+
+<!-- Dual Listbox -->
+<script src="../js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
+
+<!-- Chosen -->
+<script src="../js/plugins/chosen/chosen.jquery.js"></script>
 
 <?php
 if ($_GET['type'] == 'especial') {
@@ -277,6 +332,41 @@ if ($_GET['type'] == 'especial') {
             calendarWeeks: true,
             autoclose: true,
             format: "dd/mm/yyyy"
+        });
+
+        $(".dual_select").bootstrapDualListbox({
+            selectorMinimalHeight: 160,
+            moveOnSelect: false,
+            infoTextFiltered: "<span class=\"label label-warning\">Filtrado</span> {0} de {1}",
+            infoTextEmpty: "Lista vazia",
+            infoText: "Mostrando {0} opções",
+            moveSelectedLabel: "Mover os selecionados",
+            moveAllLabel: "Mover todos",
+            removeSelectedLabel: "Remover os selecionados",
+            removeAllLabel: "Remover todos",
+            filterPlaceHolder: "Buscar",
+            filterTextClear: "Mostrar tudo"
+        }).on('change', function(){
+            var size = $(this).find(":selected").length;
+            if(size > 3){
+                $(this).find(":selected").each(function(ind, sel){
+                    if(ind > 2)
+                        $(this).prop("selected", false)
+                });
+                $(this).bootstrapDualListbox('refresh', true);
+            }
+        });
+        $('.chosen-select').chosen({width: "100%"});
+
+        // Carrega os militares baseado no conselho escolhido.
+        $('#nome-conselho-dropdown').change(function () {
+            var id = $(this).val();
+            if (id != null){
+                $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
+                $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
+                    $("#presidente-conselho-dropdown").html(data);
+                });
+            }
         });
     });
 </script>

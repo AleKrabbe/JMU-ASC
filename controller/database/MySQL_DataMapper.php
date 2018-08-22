@@ -88,6 +88,18 @@ namespace asc {
             return $this->conselhoNomes;
         }
 
+        public function fetchNomeSiglaByIdEncrypted($idEncrypted)
+        {
+            $id = safeDecrypt($idEncrypted, $_SESSION['key']);
+            $query = "SELECT * FROM stm_asc.NOME_SIGLA WHERE id_nome_sigla = :id;";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->bindValue(":id", $id);
+            $stmt->execute();
+            $row = $stmt->fetch();
+            $nome_sigla = ["nome" => $row['nome'], "sigla" => $row['sigla']];
+            return $nome_sigla;
+        }
+
         public function fetchAllMilitares()
         {
             $this->militares = array();
@@ -311,6 +323,16 @@ namespace asc {
 
         public function getMilitares(){
             return $this->militares;
+        }
+
+        public function getAllMilitaresFromFA ($idFA) {
+            $subArray = array();
+            foreach ($this->militares as $militar) {
+                if ($militar->getOM()->getForcaArmada()->getId() === $idFA){
+                    array_push($subArray, $militar);
+                }
+            }
+            return $subArray;
         }
 
         public function getEstadoByIdEncrypted($id){
