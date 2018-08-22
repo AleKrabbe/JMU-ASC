@@ -30,10 +30,25 @@ if (isset($_POST['id_nome_sigla'])) {
 
         if ($idFA > 0) {
             $militares = $mapper->getAllMilitaresFromFA($idFA);
-            echo '<option value="null"></option>';
+            $militares_JSON = array();
+            $militares_presidente = array();
+            $militares_suplente = array();
+            $militares_juizes = array();
             foreach ($militares as $militar){
-                echo '<option value = ' . $militar->getCpfEncrypted()  . '>' . $militar->getNome() . '</option>';
+                if ($militar->getPosto()->getRank() >= 4){
+                    array_push($militares_presidente, [$militar->getCpfEncrypted(), $militar->getNome(), $militar->getPosto()->getNome()]);
+                    array_push($militares_suplente, [$militar->getCpfEncrypted(), $militar->getNome(), $militar->getPosto()->getNome()]);
+                }
             }
+            foreach ($militares as $militar){
+                if ($militar->getPosto()->getRank() < 4){
+                    array_push($militares_juizes, [$militar->getCpfEncrypted(), $militar->getNome(), $militar->getPosto()->getNome()]);
+                }
+            }
+            $militares_JSON['presidentes'] = $militares_presidente;
+            $militares_JSON['suplentes'] = $militares_suplente;
+            $militares_JSON['juizes'] = $militares_juizes;
+            echo json_encode($militares_JSON);
         } else {
             echo '<option value = ' . null  . '>' . "Não foi possível encontrar a força armada com base no nome do conselho" . '</option>';
         }

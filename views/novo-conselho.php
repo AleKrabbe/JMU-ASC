@@ -185,19 +185,6 @@ if (isset($_GET['type'])) {
                                             <div class="form-group">
                                                 <label>Selecione o suplente do presidente&nbsp;<span style="color: red">*</span></label>
                                                 <select id="suplente-conselho-dropdown" data-placeholder="Escolha um suplente..." class="form-control m-b chosen-select" name="suplente">
-                                                    <option></option>
-                                                    <option value="United States">United States</option>
-                                                    <option value="United Kingdom">United Kingdom</option>
-                                                    <option value="Australia">Australia</option>
-                                                    <option value="Austria">Austria</option>
-                                                    <option value="Bahamas">Bahamas</option>
-                                                    <option value="Barbados">Barbados</option>
-                                                    <option value="Belgium">Belgium</option>
-                                                    <option value="Bermuda">Bermuda</option>
-                                                    <option value="Brazil">Brazil</option>
-                                                    <option value="Bulgaria">Bulgaria</option>
-                                                    <option value="Cameroon">Cameroon</option>
-                                                    <option value="Canada">Canada</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -207,18 +194,6 @@ if (isset($_GET['type'])) {
                                             <div class="form-group">
                                                 <label>Selecione os juizes militares&nbsp;<span style="color: red">*</span></label>
                                                 <select id="juizes-conselho-dropdown" class="form-control m-b dual_select" name="juizes" multiple>
-                                                    <option value="United States">United States</option>
-                                                    <option value="United Kingdom">United Kingdom</option>
-                                                    <option value="Australia">Australia</option>
-                                                    <option selected value="Austria">Austria</option>
-                                                    <option selected value="Bahamas">Bahamas</option>
-                                                    <option value="Barbados">Barbados</option>
-                                                    <option value="Belgium">Belgium</option>
-                                                    <option value="Bermuda">Bermuda</option>
-                                                    <option value="Brazil">Brazil</option>
-                                                    <option value="Bulgaria">Bulgaria</option>
-                                                    <option value="Cameroon">Cameroon</option>
-                                                    <option value="Canada">Canada</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -356,7 +331,6 @@ if ($_GET['type'] == 'especial') {
                 $(this).bootstrapDualListbox('refresh', true);
             }
         });
-        $('.chosen-select').chosen({width: "100%"});
 
         // Carrega os militares baseado no conselho escolhido.
         $('#nome-conselho-dropdown').change(function () {
@@ -364,7 +338,32 @@ if ($_GET['type'] == 'especial') {
             if (id != null){
                 $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
                 $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
-                    $("#presidente-conselho-dropdown").html(data);
+                    var militares = JSON.parse(data);
+                    console.log(militares);
+                    var presidetnes = militares['presidentes'];
+                    var suplentes = militares['suplentes'];
+                    var juizes = militares['juizes'];
+
+                    var option = '<option></option>';
+                    for (var i = 0; i < presidetnes.length; i++) {
+                        option += '<option value="'+ presidetnes[i][0] + '">' + presidetnes[i][1] + ' (' + presidetnes[i][2] + ')</option>';
+                    }
+                    $("#presidente-conselho-dropdown").html(option);
+
+                    option = '<option></option>';
+                    for (var i = 0; i < suplentes.length; i++) {
+                        option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
+                    }
+                    $("#suplente-conselho-dropdown").html(option);
+
+                    option = '<option></option>';
+                    for (var i = 0; i < juizes.length; i++) {
+                        option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
+                    }
+                    $("#juizes-conselho-dropdown").html(option);
+
+                    $('.chosen-select').chosen({width: "100%"});
+                    $(".dual_select").bootstrapDualListbox('refresh', true);
                 });
             }
         });

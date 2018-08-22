@@ -48,8 +48,8 @@ $(document).ready(function () {
     });
 
     $('.lname').keyup(function () {
-        var regex = /^[a-zA-Z\ ]+$/;
-        this.value = this.value.replace(/[^a-zA-Z\ ]+/, '');
+        var regex = /^[a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ\ ]+$/;
+        this.value = this.value.replace(/[^a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ\ ]+/, '');
     }).focusout(function () {
         $(this).val($.trim($(this).val()));
         if($(this).val().length > 100 || $(this).val().length === 0){
