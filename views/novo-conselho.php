@@ -37,6 +37,7 @@ if (isset($_GET['type'])) {
     <link href="../css/plugins/datapicker/datepicker3.css" rel="stylesheet">
     <link href="../css/plugins/toastr/toastr.min.css" rel="stylesheet"/>
     <link href="../css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
+    <link href="../css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet">
     <link href="../css/animate.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
 
@@ -127,30 +128,6 @@ if (isset($_GET['type'])) {
                                     <h2>Informações gerais do novo conselho</h2>
                                     <div class="row">
                                         <div class="col-lg-6">
-                                            <div class="form-group" id="data_sorteio">
-                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
-                                                <div class="input-group date">
-                                                    <span class="input-group-addon">
-                                                        <i class="fa fa-calendar"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group" id="data_compromisso">
-                                                <label>Data do Compromisso&nbsp;<span style="color: red">*</span></label>
-                                                <div class="input-group date">
-                                                    <span class="input-group-addon">
-                                                        <i class="fa fa-calendar"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
                                             <div class="form-group">
                                                 <?php
                                                 if ($_GET['type'] == 'permanente') {
@@ -163,7 +140,7 @@ if (isset($_GET['type'])) {
                                                         "</select>";
                                                 } elseif ($_GET['type'] == 'especial') {
                                                     echo "<label>N&ordm; do processo&nbsp;<span style=\"color: red\">*</span></label>".
-                                                        "<input name=\"numero_processo\" type=\"text\" class=\"numero-proceso form-control\" pattern=\".{34,34}\" title=\"0000000-00.0000.7.09.009\">";
+                                                        "<input name=\"numero_processo\" type=\"text\" id=\"numero-processo\" class=\"form-control\" title=\"0000000-00.0000.7.09.009\">";
                                                 }
                                                 ?>
                                             </div>
@@ -193,6 +170,15 @@ if (isset($_GET['type'])) {
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="form-group">
+                                                <label>Selecione o suplente dos juizes militares&nbsp;<span style="color: red">*</span></label>
+                                                <select id="suplente-juizes-conselho-dropdown" data-placeholder="Escolha um suplente para os juizes..." class="form-control m-b chosen-select" name="suplente-juizes">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
                                                 <label>Selecione os juizes militares&nbsp;<span style="color: red">*</span></label>
                                                 <select id="juizes-conselho-dropdown" class="form-control m-b dual_select" name="juizes" multiple>
                                                 </select>
@@ -203,8 +189,163 @@ if (isset($_GET['type'])) {
 
                                 <h1>Confirmar</h1>
                                 <fieldset>
-                                    <h2>Terms and Conditions</h2>
-                                    <input id="acceptTerms" name="acceptTerms" type="checkbox" class="required"> <label for="acceptTerms">I agree with the Terms and Conditions.</label>
+                                    <h2>Confirme as datas de sorteio e compromisso</h2>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Presidente</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_presidente">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_presidente">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_presidente">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Suplente do Presidente</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_suplente">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_suplente">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_suplente">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Juiz Militar 1</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_juiz_1">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_juiz_1">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_juiz_1">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Juiz Militar 2</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_juiz_2">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_juiz_2">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_juiz_2">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Juiz Militar 3</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_juiz_3">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_juiz_3">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_juiz_3">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Suplente dos Juizes</label>
+                                                <input type="text" disabled="" class="form-control" id="nome_juiz_suplente">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_sorteio_juiz_suplente">
+                                                <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" id="data_compromisso_juiz_suplente">
+                                                <label>Data do Compromisso</label>
+                                                <div class="input-group date">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                    <input type="text" class="form-control" data-date-format="dd/mm/yyyy">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </fieldset>
                             </form>
                         </div>
@@ -239,178 +380,21 @@ if (isset($_GET['type'])) {
 <!-- Chosen -->
 <script src="../js/plugins/chosen/chosen.jquery.js"></script>
 
-<?php
-if ($_GET['type'] == 'especial') {
-    echo "<script>" .
-        "$(\".numero-proceso\").mask(\"0000000-00.0000.0.00.0000.0.00.000\", {placeholder: \"_______-__.____.7.09.009\", reverse: true});" .
-        "</script>";
-}
-?>
+<!-- Input Mask-->
+<script src="../js/plugins/jasny/jasny-bootstrap.min.js"></script>
+
+<!--Validação do cadastro-->
+<script src="../js/my_js/cadastro_conselho.js"></script>
+
 <script>
-    $(document).ready(function(){
-        var form = $("#form");
-        form.steps({
-            bodyTag: "fieldset",
-            transitionEffect: "slideLeft",
-            onStepChanging: function (event, currentIndex, newIndex)
-            {
-                form.validate().settings.ignore = ":disabled,:hidden";
-                if (currentIndex === 0 && $('#nome-conselho-dropdown').val() === 'null') {
-                    toastr.error('Selecione o tipo do novo conselho.', 'Erro!');
-                    $('#nome-conselho-dropdown').parent().addClass('has-error');
-                    return false;
-                } else if ($('#nome-conselho-dropdown').val() !== 'null') {
-                    $('#nome-conselho-dropdown').parent().removeClass('has-error');
-                    $('#nome-conselho-dropdown').parent().addClass('has-sucesso');
-                }
-
-                if(currentIndex === 1 && $("#data_sorteio input").val() === ''){
-                    toastr.error('Selecione uma data de sorteio.', 'Erro!');
-                    $('#data_sorteio').children('div').addClass('data-erro');
-                    return false;
-                } else if ($("#data_sorteio input").val() !== '') {
-                    $('#data_sorteio').children('div').removeClass('data-erro');
-                    $('#data_sorteio').children('div').addClass('data-sucesso');
-                }
-
-                if(currentIndex === 1 && $("#data_compromisso input").val() === ''){
-                    toastr.error('Selecione uma data de compromisso.', 'Erro!');
-                    $('#data_compromisso').children('div').addClass('data-erro');
-                    return false;
-                } else if ($("#data_compromisso input").val() !== '') {
-                    $('#data_compromisso').children('div').removeClass('data-erro');
-                    $('#data_compromisso').children('div').addClass('data-sucesso');
-                }
-
-                if(currentIndex === 2 && $("#presidente-conselho-dropdown").val() === 'null') {
-                    toastr.error('Selecione o presidente do conselho.', 'Erro!');
-                    $("#presidente-conselho-dropdown").next().addClass('data-erro');
-                    return false;
-                } else if (currentIndex === 2) {
-                    $("#presidente-conselho-dropdown").next().removeClass('data-erro');
-                    $("#presidente-conselho-dropdown").next().addClass('data-sucesso');
-                }
-
-                if(currentIndex === 2 && $("#suplente-conselho-dropdown").val() === 'null') {
-                    toastr.error('Selecione o suplente do presidente.', 'Erro!');
-                    $("#suplente-conselho-dropdown").next().addClass('data-erro');
-                    return false;
-                } else if (currentIndex === 2) {
-                    $("#suplente-conselho-dropdown").next().removeClass('data-erro');
-                    $("#suplente-conselho-dropdown").next().addClass('data-sucesso');
-                }
-
-                if (currentIndex === 2 && $("#juizes-conselho-dropdown :selected").length < 4) {
-                    toastr.error('Selecione 4 juizes militares.', 'Erro!');
-                    return false;
-                }
-
-                return form.valid();
-            },
-            onFinishing: function (event, currentIndex)
-            {
-                form.validate().settings.ignore = ":disabled";
-                return form.valid();
-            },
-            onFinished: function (event, currentIndex)
-            {
-                alert("Submitted!");
-            },
-            labels: {
-                cancel: "Cancelar",
-                current: "passo atual:",
-                pagination: "Paginação",
-                finish: "Pronto",
-                next: "Próximo",
-                previous: "Anterior",
-                loading: "Carregando ..."
-            }
-        });
-        $.fn.datepicker.defaults.language = 'pt-BR';
-        $("#data_sorteio .input-group.date, #data_compromisso .input-group.date").datepicker({
-            todayBtn: "linked",
-            todayHighlight: true,
-            keyboardNavigation: false,
-            forceParse: false,
-            calendarWeeks: true,
-            autoclose: true,
-            format: "dd/mm/yyyy"
-        });
-
-        $(".dual_select").bootstrapDualListbox({
-            selectorMinimalHeight: 160,
-            moveOnSelect: false,
-            infoTextFiltered: "<span class=\"label label-warning\">Filtrado</span> {0} de {1}",
-            infoTextEmpty: "Lista vazia",
-            infoText: "Mostrando {0} opções",
-            moveSelectedLabel: "Mover os selecionados",
-            moveAllLabel: "Mover todos",
-            removeSelectedLabel: "Remover os selecionados",
-            removeAllLabel: "Remover todos",
-            filterPlaceHolder: "Buscar",
-            filterTextClear: "Mostrar tudo",
-            nonSelectedListLabel: 'Militares disponíveis',
-            selectedListLabel: 'Militares selecionados'
-        }).on('change', function(){
-            var size = $(this).find(":selected").length;
-            if(size > 4){
-                $(this).find(":selected").each(function(ind, sel){
-                    if(ind > 3)
-                        $(this).prop("selected", false)
-                });
-                $(this).bootstrapDualListbox('refresh', true);
-            }
-        });
-
-        var presidentes;
-        var suplentes;
-        var juizes;
-        // Carrega os militares baseado no conselho escolhido.
-        $('#nome-conselho-dropdown').change(function () {
-            var id = $(this).val();
-            if (id != null){
-                $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
-                $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
-                    var militares = JSON.parse(data);
-                    presidentes = militares['presidentes'];
-                    suplentes = militares['suplentes'];
-                    juizes = militares['juizes'];
-
-                    var option = '<option value=\"null\"></option>';
-                    for (var i = 0; i < presidentes.length; i++) {
-                        option += '<option value="'+ presidentes[i][0] + '">' + presidentes[i][1] + ' (' + presidentes[i][2] + ')</option>';
-                    }
-                    $("#presidente-conselho-dropdown").html(option);
-
-                    option = '<option value=\"null\"></option>';
-                    for (var i = 0; i < suplentes.length; i++) {
-                        option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
-                    }
-                    $("#suplente-conselho-dropdown").html(option);
-
-                    option = '';
-                    for (var i = 0; i < juizes.length; i++) {
-                        option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
-                    }
-                    $("#juizes-conselho-dropdown").html(option);
-
-                    $('.chosen-select').chosen({width: "100%"});
-                    $(".dual_select").bootstrapDualListbox('refresh', true);
-                });
-            }
-        });
-
-        $("#presidente-conselho-dropdown").change(function () {
-            var id = $(this).val();
-            option = '<option value=\"null\"></option>';
-            for (var i = 0; i < suplentes.length; i++) {
-                if (suplentes[i][0] != id) {
-                    option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
-                }
-            }
-            $('#suplente-conselho-dropdown').empty().html(option).trigger("chosen:updated");
-        });
+    $(document).ready(function () {
+       $("#numero-processo").mask('0000000-00.0000.A.BC.BBC', {placeholder: "_______-__.____.7.09.009", 'translation': {
+               A: {pattern: /[7]/},
+               B: {pattern: /[0]/},
+               C: {pattern: /[9]/}
+           }});
     });
 </script>
+
 </body>
 </html>
