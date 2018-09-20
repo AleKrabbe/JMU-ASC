@@ -8,6 +8,9 @@ namespace asc {
     include __DIR__ . "/../../models/Militar.php";
     include __DIR__ . "/../../models/Estado.php";
     include __DIR__ . "/../../models/Cidade.php";
+    include __DIR__ . "/../../models/Conselho.php";
+    include __DIR__ . "/../../models/ConselhoPermanente.php";
+    include __DIR__ . "/../../models/ConselhoEspecial.php";
     include __DIR__ . "/../safeCrypto.php";
 
     class MySQL_DataMapper
@@ -297,6 +300,19 @@ namespace asc {
             }
         }
 
+        public function cadastrarConselho($conselho) {
+            try {
+                $id_OM = $militar->getOM()->getId();
+                $id_posto = $militar->getPosto()->getId();
+                $stmt = $this->pdo->prepare("INSERT INTO MILITAR (cpf, fname, lname, email, telefone, id_organizacao_militar, id_posto) VALUES (?,?,?,?,?,?,?);");
+                if ($stmt->execute([$militar->getCpf(), $militar->getFname(), $militar->getLname(), $militar->getEmail(), $militar->getTelefone(), $id_OM, $id_posto])) {
+                    return array(0,"Success");
+                }
+            } catch (\Exception $e) {
+                return array($stmt->errorInfo()[1], $stmt->errorInfo()[2]);
+            }
+        }
+
         public function checkMilitar($cpf) {
             $stmt = $this->pdo->prepare("SELECT * FROM stm_asc.MILITAR WHERE cpf = :cpf;");
             $stmt->execute(array(':cpf' => $cpf));
@@ -323,6 +339,16 @@ namespace asc {
 
         public function getMilitares(){
             return $this->militares;
+        }
+
+        public function getMilitarFromEncryptedCPF($cpf){
+            $decryptedCPF = safeDecrypt($cpf, $_SESSION['key']);
+            foreach ($this->militares as $militar) {
+                if ($militar->getCpf() == $decryptedCPF){
+                    return $militar;
+                }
+            }
+            return null;
         }
 
         public function getAllMilitaresFromFA ($idFA) {
@@ -373,6 +399,37 @@ namespace asc {
             return null;
         }
 
+        public function getInfodoConselhoByEncryptedNomeID($id){
+            $id = safeDecrypt($id, $_SESSION['key']);
+            $query = "SELECT nome, sigla, tipo FROM stm_asc.NOME_SIGLA WHERE id_nome_sigla = :id;";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->bindValue(":id", $id);
+            $stmt->execute();
+            $row = $stmt->fetch();
+
+            if ($row["tipo"] == 3) {
+                $tipo = "permanente";
+            } else if ($row["tipo"] == 4) {
+                $tipo = "especial";
+            } else {
+                $tipo = null;
+            }
+
+            if ($this->match_my_string("Exército", $row['nome'])) {
+                $idFA = 1;
+            } elseif ($this->match_my_string("Marinha", $row['nome'])) {
+                $idFA = 2;
+            } elseif ($this->match_my_string("Aeronáutica", $row['nome'])) {
+                $idFA = 3;
+            } else {
+                $idFA = 0;
+            }
+
+            $return_array = ["tipo" => $tipo, "FA" => $idFA, "nome" => $row["nome"], "sigla" => $row["sigla"]];
+
+            return $return_array;
+        }
+
         public function getVinculos()
         {
             $vinculos = array();
@@ -392,6 +449,15 @@ namespace asc {
         public function getPostos()
         {
             return $this->postos;
+        }
+
+        public function decrypt($msg) {
+            return safeDecrypt($msg, $_SESSION['key']);
+        }
+
+        public function match_my_string($needle, $haystack) {
+            if (strpos($haystack, $needle) !== false) return true;
+            else return false;
         }
 
     }

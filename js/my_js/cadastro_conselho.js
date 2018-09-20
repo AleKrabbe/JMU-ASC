@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var shouldUpdateAllSorteioDates = true;
     var shouldUpdateAllCompromissoDates = true;
-    var form = $("#form");
+    var form = $("#cadastro-conselho-form");
     form.steps({
         bodyTag: "fieldset",
         transitionEffect: "slideLeft",
@@ -89,7 +89,7 @@ $(document).ready(function(){
         },
         onFinished: function (event, currentIndex)
         {
-            alert("Submitted!");
+            form.submit();
         },
         labels: {
             cancel: "Cancelar",
@@ -250,5 +250,7 @@ $(document).ready(function(){
         });
         $("#juizes-conselho-dropdown").bootstrapDualListbox('refresh', true);
     });
+
+    $("#numero-processo").inputmask("9999999-99.9999.7.0\\9.00\\9");
 
 });
