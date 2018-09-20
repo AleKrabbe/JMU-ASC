@@ -69,27 +69,34 @@ $(document).ready(function(){
                 $("#nome_juiz_suplente").val($("#suplente-juizes-conselho-dropdown :selected").text());
             }
 
-            if (currentIndex === 3) {
-                if ($("#data_sorteio_presidente input").val() === "" || $("#data_sorteio_suplente input").val() === ""
-                    || $("#data_sorteio_juiz_1 input").val() === "" || $("#data_sorteio_juiz_2 input").val() === ""
-                    || $("#data_sorteio_juiz_3 input").val() === "" || $("#data_sorteio_juiz_4 input").val() === "") {
-
-                    toastr.error('Todas as datas de sorteio devem ser selecionadas.', 'Erro!');
-                    return false;
-
-                }
-            }
-
             return form.valid();
         },
         onFinishing: function (event, currentIndex)
         {
+            var flag = false;
+
+            var datas = [$("#data_sorteio_presidente input"), $("#data_sorteio_suplente input"),
+                         $("#data_sorteio_juiz_1 input"), $("#data_sorteio_juiz_2 input"),
+                         $("#data_sorteio_juiz_3 input"), $("#data_sorteio_juiz_suplente input")];
+
+            datas.forEach(function (item) {
+                if (item.val() === "") {
+                    flag = true;
+                }
+            });
+
+            if (flag) {
+                toastr.error('Todas as datas de sorteio devem ser selecionadas.', 'Erro!');
+                flag = false;
+                return false;
+            }
+
             form.validate().settings.ignore = ":disabled";
             return form.valid();
         },
         onFinished: function (event, currentIndex)
         {
-            form.submit();
+            // form.submit();
         },
         labels: {
             cancel: "Cancelar",
@@ -130,7 +137,7 @@ $(document).ready(function(){
         "#data_sorteio_juiz_1 .input-group.date, #data_compromisso_juiz_1 .input-group.date," +
         "#data_sorteio_juiz_2 .input-group.date, #data_compromisso_juiz_2 .input-group.date," +
         "#data_sorteio_juiz_3 .input-group.date, #data_compromisso_juiz_3 .input-group.date," +
-        "#data_sorteio_juiz_4 .input-group.date, #data_compromisso_juiz_4 .input-group.date").datepicker({
+        "#data_sorteio_juiz_suplente .input-group.date, #data_compromisso_juiz_suplente .input-group.date").datepicker({
         todayBtn: "linked",
         todayHighlight: true,
         keyboardNavigation: false,

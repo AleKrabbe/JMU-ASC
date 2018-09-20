@@ -18,6 +18,7 @@ class ConselhoPermanente extends Conselho
     {
         parent::__construct($nome, $sigla, $militares);
         $this->trimestre = $trimestre;
+        $this->tipo = 3;
     }
 
     public function getTrimestre()

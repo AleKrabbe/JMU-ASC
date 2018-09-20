@@ -301,12 +301,44 @@ namespace asc {
         }
 
         public function cadastrarConselho($conselho) {
+            $count_success = 0;
             try {
-                $id_OM = $militar->getOM()->getId();
-                $id_posto = $militar->getPosto()->getId();
-                $stmt = $this->pdo->prepare("INSERT INTO MILITAR (cpf, fname, lname, email, telefone, id_organizacao_militar, id_posto) VALUES (?,?,?,?,?,?,?);");
-                if ($stmt->execute([$militar->getCpf(), $militar->getFname(), $militar->getLname(), $militar->getEmail(), $militar->getTelefone(), $id_OM, $id_posto])) {
-                    return array(0,"Success");
+                $id_nome_sigla = $conselho->getIdNomeSigla();
+                $tipo = $conselho->getTipo();
+
+                if ($tipo == 3) {
+                    $specific = $conselho->getTrimestre();
+                    $stmt = $this->pdo->prepare("INSERT INTO CONSELHO_PERMANENTE (id_nome_sigla, trimestre) VALUES (?,?);");
+                } else {
+                    $specific = $conselho->getProcesso();
+                    $stmt = $this->pdo->prepare("INSERT INTO CONSELHO_ESPECIAL (id_nome_sigla, processo) VALUES (?,?);");
+                }
+
+                $militares = $conselho->getMilitares();
+
+                if ($stmt->execute([$id_nome_sigla, $specific])) {
+
+                    if ($tipo == 3) {
+                        $stmt = $this->pdo->prepare("INSERT INTO MILITAR_CONSELHO_PERMANENTE (cpf_militar,id_conselho_permanente,posicao,posto_na_epoca,data_sorteio,data_compromisso) VALUES (?,?,?,?,?,?);");
+                    } else {
+                        $stmt = $this->pdo->prepare("INSERT INTO MILITAR_CONSELHO_ESPECIAL (cpf_militar,id_conselho_especial,posicao,posto_na_epoca,data_sorteio,data_compromisso) VALUES (?,?,?,?,?,?);");
+                    }
+
+                    foreach ($militares as $militar) {
+
+                        $data_sorteio = date("Y-m-d", strtotime(str_replace('/','-', $militar[1])));
+                        $data_compromisso = date("Y-m-d", strtotime(str_replace('/','-', $militar[2])));
+
+                        if ($stmt->execute([$militar[0]->getCpf(), $this->getLastId(), $militar[3], $militar[0]->getPosto()->getNome(), $data_sorteio, $data_compromisso])) {
+                            $count_success += 1;
+                        }
+                    }
+
+                    if ($count_success == count($militares)){
+
+                        return array(0,"Success");
+                    }
+
                 }
             } catch (\Exception $e) {
                 return array($stmt->errorInfo()[1], $stmt->errorInfo()[2]);

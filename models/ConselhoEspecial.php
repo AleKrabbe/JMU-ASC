@@ -18,6 +18,7 @@ class ConselhoEspecial extends Conselho
     {
         parent::__construct($nome, $sigla, $militares);
         $this->processo = $processo;
+        $this->tipo = 4;
     }
 
     public function getProcesso()

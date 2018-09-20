@@ -41,12 +41,12 @@ try{
         $juiz_3 = $mapper->getMilitarFromEncryptedCPF($_POST['juizes'][2]);
 
         $militares = array(
-                [$presidente ,$_POST['data_sorteio_presidente'], $_POST['data_compromisso_presidente']],
-                [$suplente_presidente, $_POST['data_sorteio_suplente'], $_POST['data_compromisso_suplente']],
-                [$juiz_1, $_POST['data_sorteio_juiz_1'], $_POST['data_compromisso_juiz_1']],
-                [$juiz_2, $_POST['data_sorteio_juiz_2'], $_POST['data_compromisso_juiz_2']],
-                [$juiz_3, $_POST['data_sorteio_juiz_3'], $_POST['data_compromisso_juiz_3']],
-                [$suplente_juizes, $_POST['data_sorteio_juiz_suplente'], $_POST['data_compromisso_juiz_suplente']]);
+                [$presidente ,$_POST['data_sorteio_presidente'], $_POST['data_compromisso_presidente'], 1],
+                [$suplente_presidente, $_POST['data_sorteio_suplente'], $_POST['data_compromisso_suplente'], 2],
+                [$juiz_1, $_POST['data_sorteio_juiz_1'], $_POST['data_compromisso_juiz_1'], 3],
+                [$juiz_2, $_POST['data_sorteio_juiz_2'], $_POST['data_compromisso_juiz_2'], 3],
+                [$juiz_3, $_POST['data_sorteio_juiz_3'], $_POST['data_compromisso_juiz_3'], 3],
+                [$suplente_juizes, $_POST['data_sorteio_juiz_suplente'], $_POST['data_compromisso_juiz_suplente'], 4]);
 
         if ($infoConselho['tipo'] == "permanente") {
             $conselho = new \asc\ConselhoPermanente($infoConselho["nome"], $infoConselho["sigla"], $militares, $_POST["trimestre"]);
@@ -56,9 +56,10 @@ try{
             throw new Exception("Erro ao cadastrar um novo conselho. Contate o administrador do sistema.");
         }
 
+        $conselho->setIdNomeSigla($mapper->decrypt($_POST['nome']));
+
         $erro = $mapper->cadastrarConselho($conselho);
 
-        exit();
     }
 
 } catch (Exception $exc) {
@@ -253,7 +254,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_presidente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_presidente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -262,7 +263,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_presidente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_presidente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -279,7 +280,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_suplente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_suplente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -288,7 +289,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_suplente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_suplente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -305,7 +306,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_1">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_1" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -314,7 +315,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_1">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_1" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -331,7 +332,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_2">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_2" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -340,7 +341,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_2">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_2" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -357,7 +358,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_3">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_3" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -366,7 +367,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_3">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_3" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -383,7 +384,7 @@ try{
                                             <label>Data do Sorteio&nbsp;<span style="color: red">*</span></label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_suplente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_sorteio_juiz_suplente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -392,7 +393,7 @@ try{
                                             <label>Data do Compromisso</label>
                                             <div class="input-group date">
                                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_suplente">
+                                                <input type="text" class="form-control" data-date-format="dd/mm/yyyy" name="data_compromisso_juiz_suplente" autocomplete="off">
                                             </div>
                                         </div>
                                     </div>
@@ -438,6 +439,16 @@ try{
 
 <!--Validação do cadastro-->
 <script src="../js/my_js/cadastro_conselho.js"></script>
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($erro[0] === 0){
+        echo '<script>toastr.success(\'Conselho cadastrado com sucesso!\');</script>';
+    } else {
+        echo '<script>toastr.error(\'Não foi possível cadastrar o conselho. Código do erro: ' . $erro[0] . '\', \'Erro!\');</script>';
+    }
+}
+?>
 
 </body>
 </html>

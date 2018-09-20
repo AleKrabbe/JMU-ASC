@@ -16,6 +16,7 @@ class Conselho
     protected $nome;
     protected $sigla;
     protected $militares;
+    protected $tipo;
 
     public function __construct($nome, $sigla, $militares)
     {
@@ -37,6 +38,16 @@ class Conselho
     public function getMilitares()
     {
         return $this->militares;
+    }
+
+    public function getIdNomeSigla()
+    {
+        return $this->id_nome_sigla;
+    }
+
+    public function getTipo()
+    {
+        return $this->tipo;
     }
 
     public function setIdNomeSigla($id_nome_sigla): void
