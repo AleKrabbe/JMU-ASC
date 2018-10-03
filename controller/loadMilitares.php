@@ -55,6 +55,35 @@ if (isset($_POST['id_nome_sigla'])) {
     } else {
         echo 'Conselho não encontrado';
     }
+} else if (isset($_POST['id_conselho']) && isset($_POST['tipo_conselho'])) {
+    $id_conselho = $_POST['id_conselho'];
+    $tipo_conselho = $_POST['tipo_conselho'];
+
+    if ($tipo_conselho == "permanente"){
+        $conelho = $mapper->getConselhoPermanenteFromID($id_conselho);
+    } else if ($tipo_conselho == "especial"){
+        $conelho = $mapper->getConselhoEspecialFromID($id_conselho);
+    }
+
+    $militares = $conelho->getMilitares();
+    $militares_JSON = array();
+    $militares_presidente = array();
+    $militares_suplente = array();
+    $militares_juizes = array();
+    $suplente_juizes = array();
+
+    array_push($militares_presidente, [$militares[0][0]->getCpfEncrypted(), $militares[0][0]->getNome(), $militares[0][0]->getPosto()->getNome()]);
+    array_push($militares_suplente, [$militares[1][0]->getCpfEncrypted(), $militares[1][0]->getNome(), $militares[1][0]->getPosto()->getNome()]);
+    array_push($militares_juizes, [$militares[2][0]->getCpfEncrypted(), $militares[2][0]->getNome(), $militares[2][0]->getPosto()->getNome()]);
+    array_push($militares_juizes, [$militares[3][0]->getCpfEncrypted(), $militares[3][0]->getNome(), $militares[3][0]->getPosto()->getNome()]);
+    array_push($militares_juizes, [$militares[4][0]->getCpfEncrypted(), $militares[4][0]->getNome(), $militares[4][0]->getPosto()->getNome()]);
+    array_push($suplente_juizes, [$militares[5][0]->getCpfEncrypted(), $militares[5][0]->getNome(), $militares[5][0]->getPosto()->getNome()]);
+
+    $militares_JSON['presidente'] = $militares_presidente;
+    $militares_JSON['suplente_presidente'] = $militares_suplente;
+    $militares_JSON['juizes'] = $militares_juizes;
+    $militares_JSON['suplente_juizes'] = $suplente_juizes;
+    echo json_encode($militares_JSON);
 }
 
 function match_my_string($needle, $haystack) {

@@ -14,9 +14,9 @@ class ConselhoEspecial extends Conselho
 
     private $processo;
 
-    public function __construct($nome, $sigla, $militares, $processo)
+    public function __construct($nome, $sigla, $processo)
     {
-        parent::__construct($nome, $sigla, $militares);
+        parent::__construct($nome, $sigla);
         $this->processo = $processo;
         $this->tipo = 4;
     }

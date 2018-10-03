@@ -2786,7 +2786,7 @@ select.form-control:not([size]):not([multiple]) {
 }
 .has-success .form-control,
 .has-success .form-control:focus {
-  border-color: #1ab394;
+  border-color: #1ab394 !important;
 }
 .has-warning .form-control,
 .has-warning .form-control:focus {
@@ -2794,16 +2794,16 @@ select.form-control:not([size]):not([multiple]) {
 }
 .has-error .form-control,
 .has-error .form-control:focus {
-  border-color: #ed5565;
+  border-color: #ed5565 !important;
 }
 .has-success .control-label {
-  color: #1ab394;
+  color: #1ab394 !important;
 }
 .has-warning .control-label {
   color: #f8ac59;
 }
 .has-error .control-label {
-  color: #ed5565;
+  color: #ed5565 !important;
 }
 .input-group-addon {
   background-color: #fff;
@@ -9571,11 +9571,15 @@ li {
 }
 
 .data-erro {
-  border: 1px solid #ed5565;
+  border: 1px solid #ed5565 !important;
 }
 
 .data-sucesso {
-    border: 1px solid #1ab394;
+    border: 1px solid #1ab394 !important;
+}
+
+.data-erro-remove-border{
+    border-bottom: 0 !important;
 }
 
 label[for=bootstrap-duallistbox-nonselected-list_juizes], label[for=bootstrap-duallistbox-selected-list_juizes]{
@@ -9583,4 +9587,12 @@ label[for=bootstrap-duallistbox-nonselected-list_juizes], label[for=bootstrap-du
     font-weight: bold;
     font-size: large;
     margin: 0;
+}
+
+.dt-text-center{
+  text-align: center !important;
+}
+
+.dt-vertical-text-middle{
+  vertical-align: middle !important;
 }

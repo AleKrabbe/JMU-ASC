@@ -26,6 +26,8 @@ namespace asc {
         private $cidades;
         private $militares;
         private $conselhoNomes;
+        private $conselhos_permanentes;
+        private $conselhos_especiais;
 
         public function __construct()
         {
@@ -46,6 +48,7 @@ namespace asc {
             $this->fetchAllCidades();
             $this->fetchAllMilitares();
             $this->completeOMInfo();
+            $this->fetchAllConselhos();
         }
 
         public static function getInstance() {
@@ -115,6 +118,111 @@ namespace asc {
                 $militar->setEmail($row['email']);
                 $militar->setTelefone($row['telefone']);
                 array_push($this->militares, $militar);
+            }
+        }
+
+        public function fetchAllConselhos()
+        {
+            $this->conselhos_permanentes = array();
+            $this->conselhos_especiais = array();
+
+            // Seleciona os conselhos permanentes
+            $query_conselho_permanente = "SELECT id_conselho_permanente, trimestre, ano, nome, sigla, CONSELHO_PERMANENTE.id_nome_sigla FROM stm_asc.CONSELHO_PERMANENTE JOIN NOME_SIGLA ON CONSELHO_PERMANENTE.id_nome_sigla=NOME_SIGLA.id_nome_sigla;";
+            $result = $this->pdo->query($query_conselho_permanente);
+
+
+            while ($row = $result->fetch()) {
+
+                $id_conselho = $row['id_conselho_permanente'];
+                $trimestre = $row['trimestre'];
+                $ano = $row['ano'];
+                $nome = $row['nome'];
+                $sigla = $row['sigla'];
+                $id_nome_sigla = $row['id_nome_sigla'];
+
+                // Busca pelos militares de cada conselho permanente
+                $query_militares = "SELECT cpf_militar, id_conselho_permanente, posicao as rank_posicao, nome_posicao AS posicao, posto_na_epoca, data_sorteio, data_compromisso, id_forca_armada FROM MILITAR_CONSELHO_PERMANENTE JOIN MILITAR ON cpf = cpf_militar JOIN ORGANIZACAO_MILITAR ON MILITAR.id_organizacao_militar=ORGANIZACAO_MILITAR.id_organizacao_militar JOIN POSICAO_CONSELHO ON MILITAR_CONSELHO_PERMANENTE.posicao = POSICAO_CONSELHO.id_posicao_conselho WHERE id_conselho_permanente = ".$id_conselho." ORDER BY rank_posicao;";
+                $militar_result = $this->pdo->query($query_militares);
+
+
+                if ($this->match_my_string("Exército", $nome)) {
+                    $idFA = 1;
+                } elseif ($this->match_my_string("Marinha", $nome)) {
+                    $idFA = 2;
+                } elseif ($this->match_my_string("Aeronáutica", $nome)) {
+                    $idFA = 3;
+                } else {
+                    $idFA = 0;
+                }
+
+                $conselho_permanente = new ConselhoPermanente($nome, $sigla, $trimestre, $ano);
+                $conselho_permanente->setFa($this->getFAbyId($idFA));
+                $conselho_permanente->setIdConselho($id_conselho);
+                $conselho_permanente->setIdNomeSigla($id_nome_sigla);
+                $militares = array();
+
+                while ($row_militar = $militar_result->fetch()){
+                    $militar = $this->getMilitarbyCPF($row_militar['cpf_militar']);
+                    $posicao = $row_militar['rank_posicao'];
+                    $posto = $row_militar['posto_na_epoca'];
+//                    $FA = $this->getFAbyId($row_militar['id_forca_armada']);
+                    $data_sorteio = $row_militar['data_sorteio'];
+                    $data_compromisso = $row_militar['data_compromisso'];
+
+                    array_push($militares, [$militar, $data_sorteio, $data_compromisso, $posicao, $posto]);
+                }
+
+                $conselho_permanente->setMilitares($militares);
+                array_push($this->conselhos_permanentes, $conselho_permanente);
+            }
+
+            // Seleciona os conselhos especiais
+            $query_conselho_especial = "SELECT id_conselho_especial, processo, nome, sigla, CONSELHO_ESPECIAL.id_nome_sigla FROM stm_asc.CONSELHO_ESPECIAL JOIN NOME_SIGLA ON CONSELHO_ESPECIAL.id_nome_sigla=NOME_SIGLA.id_nome_sigla;";
+            $result = $this->pdo->query($query_conselho_especial);
+
+
+            while ($row = $result->fetch()) {
+
+                $id_conselho = $row['id_conselho_especial'];
+                $processo = $row['processo'];
+                $nome = $row['nome'];
+                $sigla = $row['sigla'];
+                $id_nome_sigla = $row['id_nome_sigla'];
+
+                // Busca pelos militares de cada conselho especial
+                $query_militares = "SELECT cpf_militar, id_conselho_especial, posicao as rank_posicao, nome_posicao AS posicao, posto_na_epoca, data_sorteio, data_compromisso, id_forca_armada FROM MILITAR_CONSELHO_ESPECIAL JOIN MILITAR ON cpf = cpf_militar JOIN ORGANIZACAO_MILITAR ON MILITAR.id_organizacao_militar=ORGANIZACAO_MILITAR.id_organizacao_militar JOIN POSICAO_CONSELHO ON MILITAR_CONSELHO_ESPECIAL.posicao = POSICAO_CONSELHO.id_posicao_conselho WHERE id_conselho_especial = ".$id_conselho." ORDER BY rank_posicao;";
+                $militar_result = $this->pdo->query($query_militares);
+
+
+                if ($this->match_my_string("Exército", $nome)) {
+                    $idFA = 1;
+                } elseif ($this->match_my_string("Marinha", $nome)) {
+                    $idFA = 2;
+                } elseif ($this->match_my_string("Aeronáutica", $nome)) {
+                    $idFA = 3;
+                } else {
+                    $idFA = 0;
+                }
+
+                $conselho_especial = new ConselhoEspecial($nome, $sigla, $processo);
+                $conselho_especial->setFa($this->getFAbyId($idFA));
+                $conselho_especial->setIdConselho($id_conselho);
+                $conselho_especial->setIdNomeSigla($id_nome_sigla);
+                $militares = array();
+
+                while ($row_militar = $militar_result->fetch()){
+                    $militar = $this->getMilitarbyCPF($row_militar['cpf_militar']);
+                    $posicao = $row_militar['rank_posicao'];
+                    $posto = $row_militar['posto_na_epoca'];
+//                    $FA = $this->getFAbyId($row_militar['id_forca_armada']);
+                    $data_sorteio = $row_militar['data_sorteio'];
+                    $data_compromisso = $row_militar['data_compromisso'];
+
+                    array_push($militares, [$militar, $data_sorteio, $data_compromisso, $posicao, $posto]);
+                }
+
+                $conselho_especial->setMilitares($militares);
+                array_push($this->conselhos_especiais, $conselho_especial);
             }
         }
 
@@ -227,6 +335,15 @@ namespace asc {
             foreach ($this->FAs as $FA) {
                 if ($FA->getId() == $id){
                     return $FA;
+                }
+            }
+            return null;
+        }
+
+        public function getMilitarbyCPF($cpf) {
+            foreach ($this->militares as $militar) {
+                if ($militar->getCpf() == $cpf){
+                    return $militar;
                 }
             }
             return null;
@@ -371,6 +488,54 @@ namespace asc {
 
         public function getMilitares(){
             return $this->militares;
+        }
+
+        public function getConselhosEspeciais()
+        {
+            return $this->conselhos_especiais;
+        }
+
+        public function getConselhosPermanentes()
+        {
+            return $this->conselhos_permanentes;
+        }
+
+        public function getConselhoPermanenteFromEncryptedID($id){
+            $decryptedID = safeDecrypt($id, $_SESSION['key']);
+            foreach ($this->conselhos_permanentes as $conselho) {
+                if ($conselho->getIdConselho() == $decryptedID){
+                    return $conselho;
+                }
+            }
+            return null;
+        }
+
+        public function getConselhoPermanenteFromID($id){
+            foreach ($this->conselhos_permanentes as $conselho) {
+                if ($conselho->getIdConselho() == $id){
+                    return $conselho;
+                }
+            }
+            return null;
+        }
+
+        public function getConselhoEspecialFromEncryptedID($id){
+            $decryptedID = safeDecrypt($id, $_SESSION['key']);
+            foreach ($this->conselhos_especiais as $conselho) {
+                if ($conselho->getIdConselho() == $decryptedID){
+                    return $conselho;
+                }
+            }
+            return null;
+        }
+
+        public function getConselhoEspecialFromID($id){
+            foreach ($this->conselhos_especiais as $conselho) {
+                if ($conselho->getIdConselho() == $id){
+                    return $conselho;
+                }
+            }
+            return null;
         }
 
         public function getMilitarFromEncryptedCPF($cpf){

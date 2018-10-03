@@ -2,6 +2,27 @@
 session_start();
 include("../controller/loginFuncs.php");
 \asc\checkLogin();
+
+try {
+    if (isset($_GET['data'])) {
+        if ($_GET['data'] == 'militar') {
+            $msg = 'militares cadastrados';
+        } elseif ($_GET['data'] == 'om') {
+            $msg = 'oraganizações militares cadastradas';
+        } elseif ($_GET['data'] == 'conselho_permanente') {
+            $msg = 'conselhos permanentes cadastradas';
+        } elseif ($_GET['data'] == 'conselho_especial') {
+            $msg = 'conselhos especiais cadastradas';
+        } else {
+            throw new Exception("Parâmetro inválido");
+        }
+    }
+} catch (Exception $e) {
+    $msg =$e->getMessage();
+    require("../500.php");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,6 +33,8 @@ include("../controller/loginFuncs.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ASC | Consulta</title>
+
+    <script defer src="../font-awesome/js/all.js"></script>
 
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -40,19 +63,7 @@ include("../controller/loginFuncs.php");
                 <div class="col-lg-12">
                     <div class="ibox ">
                         <div class="ibox-title">
-                            <h5>Tabela de
-                                <?php
-                                if (isset($_GET['data'])) {
-                                    if ($_GET['data'] == 'militar') {
-                                        echo 'militares cadastrados';
-                                    } elseif ($_GET['data'] == 'om') {
-                                        echo 'oraganizações militares cadastradas';
-                                    } else {
-                                        echo '"..."';
-                                    }
-                                }
-                                ?>
-                                </h5>
+                            <h5>Tabela de <?= $msg ?></h5>
                         </div>
                         <div class="ibox-content">
 
@@ -61,9 +72,13 @@ include("../controller/loginFuncs.php");
                                     <?php
                                         if (isset($_GET['data'])) {
                                             if ($_GET['data'] == 'militar') {
-                                                echo '<thead><tr><th>CPF</th><th>Nome</th><th>Email</th><th>Telefone</th><th>OM</th><th>Posto</th></tr></thead>';
+                                                echo '<thead><tr><th>CPF</th><th>Nome</th><th>Email</th><th>Telefone</th><th>OM</th><th>Posto</th><th>Editar</th></tr></thead>';
                                             } elseif ($_GET['data'] == 'om') {
-                                                echo '<thead><tr><th>Nome</th><th>Sigla</th><th>Telefone</th><th>Fax</th><th>Email</th><th>Comandante</th><th>Vínculo</th><th>Cidade/UF</th></tr></thead>';
+                                                echo '<thead><tr><th>Nome</th><th>Sigla</th><th>Telefone</th><th>Fax</th><th>Email</th><th>Comandante</th><th>Vínculo</th><th>Cidade/UF</th><th>Editar</th></tr></thead>';
+                                            } elseif ($_GET['data'] == 'conselho_permanente') {
+                                                echo '<thead><tr><th>Trimestre</th><th>Força Armada</th><th>Presidente</th><th>Suplente Presidente</th><th>Juiz Militar</th><th>Juiz Militar</th><th>Juiz Militar</th><th>Suplente Juiz</th><th>Editar</th></tr></thead>';
+                                            } elseif ($_GET['data'] == 'conselho_especial') {
+                                                echo '<thead><tr><th>Processo</th><th>Força Armada</th><th>Presidente</th><th>Suplente Presidente</th><th>Juiz Militar</th><th>Juiz Militar</th><th>Juiz Militar</th><th>Suplente Juiz</th><th>Editar</th></tr></thead>';
                                             } else {
                                                 echo 'Parâmetro ilegal';
                                             }
@@ -138,6 +153,10 @@ include("../controller/loginFuncs.php");
                             .css('font-size', 'inherit');
                     }
                 }
+            ],
+            columnDefs: [
+                {className: "dt-text-center dt-vertical-text-middle", "targets": [ 8 ]},
+                {className: "dt-vertical-text-middle", "targets": '_all'}
             ],
             processing: true,
             serverSide: false,

@@ -14,7 +14,19 @@ $(document).ready(function(){
                 return false;
             } else if ($('#nome-conselho-dropdown').val() !== 'null') {
                 $('#nome-conselho-dropdown').parent().removeClass('has-error');
-                $('#nome-conselho-dropdown').parent().addClass('has-sucesso');
+                $('#nome-conselho-dropdown').parent().addClass('has-success');
+            }
+
+            if (currentIndex === 1 && $('#numero-processo').length) {
+                $process = $('#numero-processo').val();
+                if (/^\d{7}\-\d{2}\.\d{4}\.7\.09\.009$/.test($process)) {
+                    $('#numero-processo').removeClass('has-error');
+                    $('#numero-processo').addClass('data-sucesso');
+                } else {
+                    toastr.error('Número de processo inválido.', 'Erro!');
+                    $('#numero-processo').addClass('data-erro');
+                    return false;
+                }
             }
 
             if(currentIndex === 2 && $("#presidente-conselho-dropdown").val() === 'null') {
@@ -35,11 +47,6 @@ $(document).ready(function(){
                 $("#suplente-conselho-dropdown").next().addClass('data-sucesso');
             }
 
-            if (currentIndex === 2 && $("#juizes-conselho-dropdown :selected").length != 3) {
-                toastr.error('Selecione 3 juizes militares.', 'Erro!');
-                return false;
-            }
-
             if(currentIndex === 2 && $("#suplente-juizes-conselho-dropdown").val() === 'null') {
                 toastr.error('Selecione o suplente dos juizes.', 'Erro!');
                 $("#suplente-juizes-conselho-dropdown").next().addClass('data-erro');
@@ -47,6 +54,14 @@ $(document).ready(function(){
             } else if (currentIndex === 2) {
                 $("#suplente-juizes-conselho-dropdown").next().removeClass('data-erro');
                 $("#suplente-juizes-conselho-dropdown").next().addClass('data-sucesso');
+            }
+
+            if (currentIndex === 2 && $("#juizes-conselho-dropdown :selected").length != 3) {
+                toastr.error('Selecione 3 juizes militares.', 'Erro!');
+                $("select[name^=juizes], input[placeholder*=uscar]").addClass('data-erro').siblings(".btn-group").addClass('data-erro data-erro-remove-border');
+                return false;
+            } else if (currentIndex === 2 && $("#juizes-conselho-dropdown :selected").length == 3){
+                $("select[name^=juizes], input[placeholder*=uscar]").removeClass('data-erro').addClass('data-sucesso').siblings(".btn-group").removeClass('data-erro').addClass('data-sucesso');
             }
 
             if (newIndex === 3) {
@@ -96,7 +111,7 @@ $(document).ready(function(){
         },
         onFinished: function (event, currentIndex)
         {
-            // form.submit();
+            form.submit();
         },
         labels: {
             cancel: "Cancelar",
@@ -176,56 +191,15 @@ $(document).ready(function(){
     var suplentes;
     var juizes;
     var option = "";
+
     // Carrega os militares baseado no conselho escolhido.
     $('#nome-conselho-dropdown').change(function () {
-        var id = $(this).val();
-        if (id != null){
-            $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
-            $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
-                var militares = JSON.parse(data);
-                presidentes = militares['presidentes'];
-                suplentes = militares['suplentes'];
-                juizes = militares['juizes'];
-
-                option = '<option value=\"null\"></option>';
-                for (var i = 0; i < presidentes.length; i++) {
-                    option += '<option value="'+ presidentes[i][0] + '">' + presidentes[i][1] + ' (' + presidentes[i][2] + ')</option>';
-                }
-                $("#presidente-conselho-dropdown").html(option);
-
-                option = '<option value=\"null\"></option>';
-                for (var i = 0; i < suplentes.length; i++) {
-                    option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
-                }
-                $("#suplente-conselho-dropdown").html(option);
-
-                option = '';
-                for (var i = 0; i < juizes.length; i++) {
-                    option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
-                }
-                $("#juizes-conselho-dropdown").html(option);
-
-                option = '<option value=\"null\"></option>';
-                for (var i = 0; i < juizes.length; i++) {
-                    option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
-                }
-                $("#suplente-juizes-conselho-dropdown").html(option);
-
-                $('.chosen-select').chosen({width: "100%"});
-                $(".dual_select").bootstrapDualListbox('refresh', true);
-            });
-        }
+        loadMilitares($(this).val());
     });
 
     $("#presidente-conselho-dropdown").change(function () {
         var id = $(this).val();
-        option = '<option value=\"null\"></option>';
-        for (var i = 0; i < suplentes.length; i++) {
-            if (suplentes[i][0] != id) {
-                option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
-            }
-        }
-        $('#suplente-conselho-dropdown').empty().html(option).trigger("chosen:updated");
+        updateSuplente(id);
     });
 
     $("#juizes-conselho-dropdown").change(function () {
@@ -260,4 +234,96 @@ $(document).ready(function(){
 
     $("#numero-processo").inputmask("9999999-99.9999.7.0\\9.00\\9");
 
+    if ($('#id-conselho').val() && $('#tipo-conselho').val()){
+        loadMilitares($('#nome-conselho-dropdown').val());
+        $.post("../controller/loadMilitares.php", {id_conselho: $('#id-conselho').val(), tipo_conselho: $('#tipo-conselho').val()}, function (data, status) {
+            var militares = JSON.parse(data);
+            var presidente = militares['presidente'];
+            var suplente_presidente = militares['suplente_presidente'];
+            var juizes_militares = militares['juizes'];
+            var suplente_juizes_militares = militares['suplente_juizes'];
+
+
+            $nome_presidente = presidente[0][1] + ' (' + presidente[0][2] + ')';
+            $("#presidente-conselho-dropdown > option").each(function () {
+               if ($(this).text() === $nome_presidente) {
+                   $(this).prop('selected', true);
+               }
+            });
+            $("#presidente-conselho-dropdown").trigger("chosen:updated");
+
+            updateSuplente($("#presidente-conselho-dropdown").val());
+
+            $nome_suplente = suplente_presidente[0][1] + ' (' + suplente_presidente[0][2] + ')';
+            $("#suplente-conselho-dropdown > option").each(function () {
+                if ($(this).text() === $nome_suplente) {
+                    $(this).prop('selected', true);
+                }
+            });
+            $("#suplente-conselho-dropdown").trigger("chosen:updated");
+
+            $nome_suplente_juizes_militares = suplente_juizes_militares[0][1] + ' (' + suplente_juizes_militares[0][2] + ')';
+            $("#suplente-juizes-conselho-dropdown > option").each(function () {
+                if ($(this).text() === $nome_suplente_juizes_militares) {
+                    $(this).prop('selected', true);
+                }
+            });
+            $("#suplente-juizes-conselho-dropdown").trigger("chosen:updated");
+
+            // FAZER FUNCAO PARA ATUALIZAR JUIZES COM A SELEÇÃO DO SUPLENTE DOS JUIZES, VERIFICAR COMO SELECIONAR MAIS DE UM ITEM (PARA O CASO DOS JUIZES);S
+
+        });
+    }
+
 });
+
+function loadMilitares($nome_conselho) {
+    var id = $nome_conselho;
+    if (id != null){
+        $("#presidente-conselho-dropdown").html("<option>Carregando ...</option>");
+        $.post("../controller/loadMilitares.php", {id_nome_sigla: id}, function (data, status) {
+            var militares = JSON.parse(data);
+            presidentes = militares['presidentes'];
+            suplentes = militares['suplentes'];
+            juizes = militares['juizes'];
+
+            option = '<option value=\"null\"></option>';
+            for (var i = 0; i < presidentes.length; i++) {
+                option += '<option value="'+ presidentes[i][0] + '">' + presidentes[i][1] + ' (' + presidentes[i][2] + ')</option>';
+            }
+            $("#presidente-conselho-dropdown").html(option);
+
+            option = '<option value=\"null\"></option>';
+            for (var i = 0; i < suplentes.length; i++) {
+                option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
+            }
+            $("#suplente-conselho-dropdown").html(option);
+
+            option = '';
+            for (var i = 0; i < juizes.length; i++) {
+                option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
+            }
+            $("#juizes-conselho-dropdown").html(option);
+
+            option = '<option value=\"null\"></option>';
+            for (var i = 0; i < juizes.length; i++) {
+                option += '<option value="'+ juizes[i][0] + '">' + juizes[i][1] + ' (' + juizes[i][2] + ')</option>';
+            }
+            $("#suplente-juizes-conselho-dropdown").html(option);
+
+            $('.chosen-select').chosen({width: "100%"});
+            $(".dual_select").bootstrapDualListbox('refresh', true);
+        });
+    }
+}
+
+function updateSuplente($id) {
+    var id = $id;
+    option = '<option value=\"null\"></option>';
+    for (var i = 0; i < suplentes.length; i++) {
+        if (suplentes[i][0] != id) {
+            option += '<option value="'+ suplentes[i][0] + '">' + suplentes[i][1] + ' (' + suplentes[i][2] + ')</option>';
+        }
+    }
+    $('#suplente-conselho-dropdown').empty().html(option).trigger("chosen:updated");
+}
